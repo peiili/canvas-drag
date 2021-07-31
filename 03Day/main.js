@@ -1,14 +1,14 @@
 const canvas = document.getElementById("canvas");
 const canvasWidth = 500;
 const canvasHeight = 500;
-let i = 0;
 
 canvas.width = canvasWidth;
 canvas.height = canvasHeight;
 
 const context = canvas.getContext("2d");
 const canvasStory = [];
-
+let currentHover = -1
+let currentSelect = -1
 
 initCanvas()
 
@@ -69,10 +69,14 @@ function deleteFirst() {
   initCanvas()
   for (let i = 0; i < canvasStory.length; i++) {
     const element = canvasStory[i];
+    if(element.hover){
+      // 更新当前被选中的索引
+      currentHover = i
+    }
     renderCanvas(element);
   }
 }
-// canvas.addEventListener("click", mouseDown, false);
+// 渲染rect
 function renderCanvas(data) {
   const rect = new drawRect(data.x, data.y, data.width, data.height, data.color, data.hover);
   rect.draw();
@@ -81,7 +85,7 @@ function renderCanvas(data) {
 function mouseMove(event) {
   const mouseX = event.pageX
   const mouseY = event.pageY
-  let hasHover = -1
+
   initCanvas()
   // 记录下hover 的对象并初始化所有内容
   canvasStory.forEach((e,index) => {
@@ -94,11 +98,11 @@ function mouseMove(event) {
     e.hover = false
     if (atRangeY && atRangeX) {
       // 记录下最后一个hover
-      hasHover = index
+      currentHover = index
     }
   })
-  if(hasHover>-1){
-    canvasStory[hasHover].hover = true
+  if(currentHover>-1&&canvasStory.length>0){
+    canvasStory[currentHover].hover = true
   }
  // 将处理后的数据再次渲染到画布
   canvasStory.forEach((e) => {
@@ -107,19 +111,18 @@ function mouseMove(event) {
 }
 // 鼠标点击
 function mouseEnter(event){
-  const mouseX = event.pageX
-  const mouseY = event.pageY
-  canvasStory.forEach(e=>{
-    const targetminX = e.x
-    const targetmaxX = e.x+e.width
-    const targetminY = e.y
-    const targetmaxY = e.y+e.height
-    const atRangeX = mouseX>targetminX&&mouseX<targetmaxX
-    const atRangeY = mouseY>targetminY&&mouseY<targetmaxY
-    if(atRangeY&&atRangeX){
-      console.log(true)
+    console.log(currentHover)
+    if(canvasStory.length){
+      // 点击后将被点击的移动至最上层
+      const current = canvasStory.splice(currentHover,1)
+      canvasStory.push(current[0])
+      // currentHover = canvasStory.length-1
+      currentSelect = canvasStory.length-1
+      initCanvas()
+      canvasStory.forEach((e) => {
+        renderCanvas(e)
+      })
     }
-  })
 }
 
 const addBtn = document.getElementById("addRect");
@@ -129,3 +132,5 @@ const delBtn = document.getElementById("delRect");
 delBtn.addEventListener("click", deleteFirst, false);
 
 canvas.addEventListener('mousemove', mouseMove, false)
+
+canvas.addEventListener('click', mouseEnter, false)

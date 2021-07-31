@@ -13,7 +13,6 @@ context.fillStyle = "yellow";
 context.fillRect(0, 0, canvasWidth, canvasHeight);
 
 // 创建矩形
-
 class drawRect {
   constructor(x, y, width, height, color) {
     this.x = x;
@@ -43,7 +42,6 @@ function addRect() {
   };
   renderCanvas(imgData)
   canvasStory.push(imgData)
-  console.log(canvasStory)
 }
 
 
