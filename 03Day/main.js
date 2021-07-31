@@ -13,6 +13,7 @@ let currentSelect = -1
 initCanvas()
 
 function initCanvas() {
+  currentHover = -1
   context.clearRect(0, 0, canvasWidth, canvasHeight);
   context.fillStyle = "yellow";
   context.fillRect(0, 0, canvasWidth, canvasHeight);
@@ -67,6 +68,10 @@ function addRect() {
 function deleteFirst() {
   canvasStory.shift();
   initCanvas()
+  if(canvasStory.length===0){
+    currentHover = -1
+    currentSelect = -1
+  }
   for (let i = 0; i < canvasStory.length; i++) {
     const element = canvasStory[i];
     if(element.hover){
@@ -88,6 +93,7 @@ function mouseMove(event) {
 
   initCanvas()
   // 记录下hover 的对象并初始化所有内容
+  // currentHover = -1
   canvasStory.forEach((e,index) => {
     const targetminX = e.x
     const targetmaxX = e.x + e.width
@@ -104,6 +110,10 @@ function mouseMove(event) {
   if(currentHover>-1&&canvasStory.length>0){
     canvasStory[currentHover].hover = true
   }
+  if(currentSelect>-1){
+    canvasStory[currentSelect].hover = true
+  }
+
  // 将处理后的数据再次渲染到画布
   canvasStory.forEach((e) => {
     renderCanvas(e)
