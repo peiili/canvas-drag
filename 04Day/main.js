@@ -23,18 +23,56 @@ function initCanvas() {
 }
 // 渲染字体
 class drawText {
-  constructor(text,size,color){
-
+  constructor(width,left,top,text,size,family,align,color){
+    this.width = width
+    this.left = left
+    this.top = top
+    this.text = text
+    this.size = size||16
+    this.color = color||'white',
+    this.family = family||'Arial'
+    this.align = align||'center' 
   }
   render(){
-
+    // context.shadowColor = this.color;
+    context.shadowBlur = "0";
+    context.fillStyle = 'white';
+    context.textAlign = 'center';
+    context.font=`${this.size}px Arial`;
+    let start = 0;
+    let textWidth = 0;
+    // 居中对齐
+    let positionX = this.left+this.width/2;
+    let positionY =this.top+10;
+    if(context.measureText(this.text).width<this.width){
+          context.fillText(
+            this.text,
+            positionX,
+            positionY
+          );
+    }else{
+      for (let i = 0; i < this.text.length; i++) {
+        const shotText = this.text.substring(start, i)
+        textWidth = context.measureText(shotText).width;
+        if (textWidth >= this.width-20) {
+              start = i
+              positionY +=this.size
+              context.fillText(
+                shotText,
+                positionX,
+                positionY
+              );
+        }
+      }
+    }
   }
 }
 
 // 创建矩形
 
-class drawRect {
+class drawRect extends drawText {
   constructor(x, y, width, height, color, hover, text) {
+    super(width,x, y,text,16,'','center','white');
     this.x = x;
     this.y = y;
     this.width = width;
@@ -51,41 +89,10 @@ class drawRect {
       context.shadowColor = "";
       context.shadowBlur = "0";
     }
-    // context.font()
     context.fillStyle = this.color;
     context.fillRect(this.x, this.y, this.width, this.height);
     if (Boolean(this.text)) {
-      context.shadowColor = "";
-      context.shadowBlur = "0";
-      context.fillStyle = "white";
-      context.textAlign = "center";
-      // context.font="40px Arial";
-      let start = 0;
-      let textWidth = 0;
-      // 居中对齐
-      let positionX = this.x+this.width/2;
-      let positionY =this.y+10;
-      if(context.measureText(this.text).width<this.width){
-            context.fillText(
-              this.text,
-              positionX,
-              positionY
-            );
-      }else{
-        for (let i = 0; i < this.text.length; i++) {
-          const shotText = this.text.substring(start, i)
-          textWidth = context.measureText(shotText).width;
-          if (textWidth >= this.width-20) {
-                start = i
-                positionY +=10
-                context.fillText(
-                  shotText,
-                  positionX,
-                  positionY
-                );
-          }
-        }
-      }
+      super.render()
     }
   }
 }
