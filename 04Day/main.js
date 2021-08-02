@@ -1,4 +1,4 @@
-const borderBox = document.getElementById("placeholder");
+const activeBox = document.getElementById("placeholder");
 const customColor = document.getElementById("customColor");
 const addBtn = document.getElementById("addRect");
 const currentIndex = document.getElementById("current");
@@ -19,8 +19,7 @@ const context = canvas.getContext("2d");
 canvas.width = canvasWidth;
 canvas.height = canvasHeight;
 
-
-class drawActive {
+class DrawActive {
   constructor(element,width,height,left,top,shadow){
     this.element = element
     this.width = width
@@ -38,7 +37,7 @@ class drawActive {
   }
 }
 // 渲染字体
-class drawText {
+class DrawText {
   constructor(width,left,top,text,size,family,align,color){
     this.width = width
     this.left = left
@@ -84,8 +83,7 @@ class drawText {
 }
 
 // 创建矩形
-
-class drawRect extends drawText {
+class DrawRect extends DrawText {
   constructor(x, y, width, height, color, hover, text) {
     super(width,x, y,text,16,'','center','white');
     this.x = x;
@@ -111,6 +109,30 @@ class drawRect extends drawText {
     }
   }
 }
+class RecordActive{
+  constructor(canvasStory,mouseX,mouseY){
+    this.canvasStory = canvasStory
+    this.mouseX = mouseX
+    this.mouseY = mouseY
+  }
+  record(){
+    let currentHover = -1
+    this.canvasStory.forEach((e, index) => {
+      const targetminX = e.x;
+      const targetmaxX = e.x + e.width;
+      const targetminY = e.y;
+      const targetmaxY = e.y + e.height;
+      const atRangeX = this.mouseX > targetminX && this.mouseX < targetmaxX;
+      const atRangeY = this.mouseY > targetminY && this.mouseY < targetmaxY;
+      e.hover = false;
+      if (atRangeY && atRangeX) {
+        // 记录下最后一个hover
+        currentHover = index;
+      }
+    });
+    return currentHover;
+  }
+}
 initCanvas();
 
 function initCanvas() {
@@ -119,6 +141,7 @@ function initCanvas() {
   context.fillStyle = "yellow";
   context.fillRect(0, 0, canvasWidth, canvasHeight);
 }
+
 function addRect() {
   const width = 100;
   const height = 60;
@@ -144,7 +167,7 @@ function deleteFirst() {
   if (canvasStory.length === 0) {
     currentHover = -1;
     currentSelect = -1;
-    const active = new drawActive(borderBox,0,0,0,0,'0')
+    const active = new DrawActive(activeBox,0,0,0,0,'0')
     active.render();
   }
   for (let i = 0; i < canvasStory.length; i++) {
@@ -158,7 +181,7 @@ function deleteFirst() {
 }
 // 渲染rect
 function renderCanvas(data) {
-  const rect = new drawRect(
+  const rect = new DrawRect(
     data.x,
     data.y,
     data.width,
@@ -171,49 +194,59 @@ function renderCanvas(data) {
 }
 // 鼠标悬浮
 function mouseMove(event) {
+
+
+  // initCanvas();  
+  // canvasStory.forEach((e) => {
+  //   renderCanvas(e);
+  // });
+}
+function range(event){
+  const canvasRangeMinX = canvas.offsetLeft
+  const canvasRangeMaxX = canvas.offsetLeft+canvas.width
+  const canvasRangeMinY = canvas.offsetTop
+  const canvasRangeMaxY = canvas.offsetTop+canvas.height
+  const atCanvasRangeX = event.pageX>=canvasRangeMinX&&event.pageX<=canvasRangeMaxX
+  const atCanvasRangeY = event.pageY>=canvasRangeMinY&&event.pageY<=canvasRangeMaxY
+  return atCanvasRangeX&&atCanvasRangeY
+}
+// 监听鼠标点击
+function onmousedown(event){
+  const arRange = range(event)
+  if(arRange){
+    console.log(event)
+  }
+
+  
+}
+// 监听鼠标抬起
+function onmouseup(event){
+  console.log(event)
+}
+// 鼠标点击
+function mouseEnter(event) {
   const mouseX = event.pageX;
   const mouseY = event.pageY;
 
-  initCanvas();
   // 记录下hover 的对象并初始化所有内容
-  // currentHover = -1
-  canvasStory.forEach((e, index) => {
-    const targetminX = e.x;
-    const targetmaxX = e.x + e.width;
-    const targetminY = e.y;
-    const targetmaxY = e.y + e.height;
-    const atRangeX = mouseX > targetminX && mouseX < targetmaxX;
-    const atRangeY = mouseY > targetminY && mouseY < targetmaxY;
-    e.hover = false;
-    if (atRangeY && atRangeX) {
-      // 记录下最后一个hover
-      currentHover = index;
-    }
-  });
+  initCanvas();
+  const recordActive = new RecordActive(canvasStory,mouseX,mouseY)
+  currentHover = recordActive.record()
+
   if (currentHover > -1 && canvasStory.length > 0) {
     canvasStory[currentHover].hover = true;
   }
   if (currentSelect > -1) {
     canvasStory[currentSelect].hover = true;
   }
-
-  // 将处理后的数据再次渲染到画布
-  canvasStory.forEach((e) => {
-    renderCanvas(e);
-  });
-}
-// 鼠标点击
-function mouseEnter() {
-  console.log(currentHover);
   if (canvasStory.length) {
     // 点击后将被点击的移动至最上层
     const current = canvasStory.splice(currentHover, 1);
     canvasStory.push(current[0]);
-    // currentHover = canvasStory.length-1
     currentSelect = canvasStory.length - 1;
     const currentObj =  canvasStory[currentSelect]
     const {width,height,y,x} = currentObj
-    const active = new drawActive(borderBox,width,height,x,y,'0 0 7px #000')
+    const active = new DrawActive(activeBox,width,height,x,y,'0 0 7px #000')
     active.render();
     initCanvas();
 
@@ -245,7 +278,9 @@ addBtn.addEventListener("click", addRect, false);
 
 delBtn.addEventListener("click", deleteFirst, false);
 
+document.addEventListener('mousedown',onmousedown,false)
 canvas.addEventListener("mousemove", mouseMove, false);
+canvas.addEventListener('mouseup',onmouseup,false)
 
 canvas.addEventListener("click", mouseEnter, false);
 
