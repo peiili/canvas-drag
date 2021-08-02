@@ -1,5 +1,6 @@
 const canvas = document.getElementById("canvas");
 const borderBox = document.getElementById("placeholder");
+const customColor = document.getElementById("customColor");
 const canvasWidth = 500;
 const canvasHeight = 500;
 const currentIndex = document.getElementById("current");
@@ -14,14 +15,7 @@ let currentSelect = -1;
 canvas.width = canvasWidth;
 canvas.height = canvasHeight;
 
-initCanvas();
 
-function initCanvas() {
-  currentHover = -1;
-  context.clearRect(0, 0, canvasWidth, canvasHeight);
-  context.fillStyle = "yellow";
-  context.fillRect(0, 0, canvasWidth, canvasHeight);
-}
 class drawActive {
   constructor(element,width,height,left,top,shadow){
     this.element = element
@@ -32,12 +26,11 @@ class drawActive {
     this.boxShadow = shadow||''
   }
   render(){
-    console.log(this.boxShadow)
     this.element.style.width =this.width+'px'
     this.element.style.height =this.height+'px'
     this.element.style.left =this.left+'px'
     this.element.style.top =this.top+'px'
-    this.element.style.boxShadow =this.boxShadow
+    // this.element.style.boxShadow =this.boxShadow
   }
 }
 // 渲染字体
@@ -53,7 +46,6 @@ class drawText {
     this.align = align||'center' 
   }
   render(){
-    // context.shadowColor = this.color;
     context.shadowBlur = "0";
     context.fillStyle = 'white';
     context.textAlign = 'center';
@@ -115,11 +107,18 @@ class drawRect extends drawText {
     }
   }
 }
+initCanvas();
 
+function initCanvas() {
+  currentHover = -1;
+  context.clearRect(0, 0, canvasWidth, canvasHeight);
+  context.fillStyle = "yellow";
+  context.fillRect(0, 0, canvasWidth, canvasHeight);
+}
 function addRect() {
   const width = 100;
   const height = 60;
-  const color = "red";
+  const color = customColor.value;
   const x = Math.random() * (canvasWidth - width);
   const y = Math.random() * (canvasHeight - height);
   const imgData = {
@@ -141,6 +140,8 @@ function deleteFirst() {
   if (canvasStory.length === 0) {
     currentHover = -1;
     currentSelect = -1;
+    const active = new drawActive(borderBox,0,0,0,0,'0')
+    active.render();
   }
   for (let i = 0; i < canvasStory.length; i++) {
     const element = canvasStory[i];
