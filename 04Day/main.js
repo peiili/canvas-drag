@@ -1,16 +1,20 @@
-const canvas = document.getElementById("canvas");
 const borderBox = document.getElementById("placeholder");
 const customColor = document.getElementById("customColor");
-const canvasWidth = 500;
-const canvasHeight = 500;
+const addBtn = document.getElementById("addRect");
 const currentIndex = document.getElementById("current");
-
-const context = canvas.getContext("2d");
-const canvasStory = [];
 const inputText = document.getElementById("inputText");
 const renderTextBtn = document.getElementById("renderText");
+const delBtn = document.getElementById("delRect");
+const canvas = document.getElementById("canvas");
+
+const canvasWidth = 500;
+const canvasHeight = 500;
+
 let currentHover = -1;
 let currentSelect = -1;
+
+const canvasStory = [];
+const context = canvas.getContext("2d");
 
 canvas.width = canvasWidth;
 canvas.height = canvasHeight;
@@ -236,13 +240,13 @@ function renderText() {
   }
 }
 
-const addBtn = document.getElementById("addRect");
+
 addBtn.addEventListener("click", addRect, false);
 
-const delBtn = document.getElementById("delRect");
 delBtn.addEventListener("click", deleteFirst, false);
 
 canvas.addEventListener("mousemove", mouseMove, false);
 
 canvas.addEventListener("click", mouseEnter, false);
+
 renderTextBtn.addEventListener("click", renderText, false);
