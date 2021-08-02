@@ -4,6 +4,6 @@ body,html{
 .box{
   position: relative;
 }
-.placeholder{
+#placeholder{
   position: absolute;
 }

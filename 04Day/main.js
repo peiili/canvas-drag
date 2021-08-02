@@ -1,4 +1,5 @@
 const canvas = document.getElementById("canvas");
+const borderBox = document.getElementById("placeholder");
 const canvasWidth = 500;
 const canvasHeight = 500;
 const currentIndex = document.getElementById("current");
@@ -20,6 +21,24 @@ function initCanvas() {
   context.clearRect(0, 0, canvasWidth, canvasHeight);
   context.fillStyle = "yellow";
   context.fillRect(0, 0, canvasWidth, canvasHeight);
+}
+class drawActive {
+  constructor(element,width,height,left,top,shadow){
+    this.element = element
+    this.width = width
+    this.height = height
+    this.left = left
+    this.top = top
+    this.boxShadow = shadow||''
+  }
+  render(){
+    console.log(this.boxShadow)
+    this.element.style.width =this.width+'px'
+    this.element.style.height =this.height+'px'
+    this.element.style.left =this.left+'px'
+    this.element.style.top =this.top+'px'
+    this.element.style.boxShadow =this.boxShadow
+  }
 }
 // 渲染字体
 class drawText {
@@ -82,13 +101,13 @@ class drawRect extends drawText {
     this.text = text;
   }
   draw() {
-    if (this.hover) {
-      context.shadowColor = "black";
-      context.shadowBlur = "10";
-    } else {
-      context.shadowColor = "";
-      context.shadowBlur = "0";
-    }
+    // if (this.hover) {
+    //   context.shadowColor = "black";
+    //   context.shadowBlur = "10";
+    // } else {
+    //   context.shadowColor = "";
+    //   context.shadowBlur = "0";
+    // }
     context.fillStyle = this.color;
     context.fillRect(this.x, this.y, this.width, this.height);
     if (Boolean(this.text)) {
@@ -187,6 +206,10 @@ function mouseEnter() {
     canvasStory.push(current[0]);
     // currentHover = canvasStory.length-1
     currentSelect = canvasStory.length - 1;
+    const currentObj =  canvasStory[currentSelect]
+    const {width,height,y,x} = currentObj
+    const active = new drawActive(borderBox,width,height,x,y,'0 0 7px #000')
+    active.render();
     initCanvas();
 
     canvasStory.forEach((e) => {
