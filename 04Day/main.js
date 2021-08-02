@@ -54,7 +54,7 @@ class drawText {
     let textWidth = 0;
     // 居中对齐
     let positionX = this.left+this.width/2;
-    let positionY =this.top+10;
+    let positionY =this.top+10+this.size;
     if(context.measureText(this.text).width<this.width){
           context.fillText(
             this.text,
@@ -67,12 +67,12 @@ class drawText {
         textWidth = context.measureText(shotText).width;
         if (textWidth >= this.width-20) {
               start = i
-              positionY +=this.size
               context.fillText(
                 shotText,
                 positionX,
                 positionY
               );
+              positionY +=this.size
         }
       }
     }
