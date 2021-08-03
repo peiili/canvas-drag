@@ -13,6 +13,8 @@ const canvasHeight = 500;
 let currentHover = -1;
 let currentSelect = -1;
 let touchStart = false;
+let touchOffsetX = 0;
+let touchOffsetY = 0;
 const canvasStory = [];
 const context = canvas.getContext("2d");
 
@@ -20,62 +22,62 @@ canvas.width = canvasWidth;
 canvas.height = canvasHeight;
 
 class DrawActive {
-  constructor(element,width,height,left,top,shadow){
-  this.element = element
+  constructor(element, width, height, left, top, shadow) {
+    this.element = element
     this.width = width
     this.height = height
     this.left = left
     this.top = top
-    this.boxShadow = shadow||''
+    this.boxShadow = shadow || ''
   }
-  render(){
-    this.element.style.width =this.width+'px'
-    this.element.style.height =this.height+'px'
-    this.element.style.left =this.left+'px'
-    this.element.style.top =this.top+'px'
+  render() {
+    this.element.style.width = this.width + 'px'
+    this.element.style.height = this.height + 'px'
+    this.element.style.left = this.left + 'px'
+    this.element.style.top = this.top + 'px'
     // this.element.style.boxShadow =this.boxShadow
   }
 }
 // 渲染字体
 class DrawText {
-  constructor(width,left,top,text,size,family,align,color){
+  constructor(width, left, top, text, size, family, align, color) {
     this.width = width
     this.left = left
     this.top = top
     this.text = text
-    this.size = size||16
-    this.color = color||'white',
-    this.family = family||'Arial'
-    this.align = align||'center'
+    this.size = size || 16
+    this.color = color || 'white',
+      this.family = family || 'Arial'
+    this.align = align || 'center'
   }
-  render(){
+  render() {
     context.shadowBlur = "0";
     context.fillStyle = 'white';
     context.textAlign = 'center';
-    context.font=`${this.size}px Arial`;
+    context.font = `${this.size}px Arial`;
     let start = 0;
     let textWidth = 0;
     // 居中对齐
-    let positionX = this.left+this.width/2;
-    let positionY =this.top+10+this.size;
-    if(context.measureText(this.text).width<this.width){
-          context.fillText(
-            this.text,
-            positionX,
-            positionY
-          );
-    }else{
+    let positionX = this.left + this.width / 2;
+    let positionY = this.top + 10 + this.size;
+    if (context.measureText(this.text).width < this.width) {
+      context.fillText(
+        this.text,
+        positionX,
+        positionY
+      );
+    } else {
       for (let i = 0; i < this.text.length; i++) {
         const shotText = this.text.substring(start, i)
         textWidth = context.measureText(shotText).width;
-        if (textWidth >= this.width-20) {
-              start = i
-              context.fillText(
-                shotText,
-                positionX,
-                positionY
-              );
-              positionY +=this.size
+        if (textWidth >= this.width - 20) {
+          start = i
+          context.fillText(
+            shotText,
+            positionX,
+            positionY
+          );
+          positionY += this.size
         }
       }
     }
@@ -85,7 +87,7 @@ class DrawText {
 // 创建矩形
 class DrawRect extends DrawText {
   constructor(x, y, width, height, color, hover, text) {
-    super(width,x, y,text,16,'','center','white');
+    super(width, x, y, text, 16, '', 'center', 'white');
     this.x = x;
     this.y = y;
     this.width = width;
@@ -109,13 +111,13 @@ class DrawRect extends DrawText {
     }
   }
 }
-class RecordActive{
-  constructor(canvasStory,mouseX,mouseY){
+class RecordActive {
+  constructor(canvasStory, mouseX, mouseY) {
     this.canvasStory = canvasStory
     this.mouseX = mouseX
     this.mouseY = mouseY
   }
-  record(){
+  record() {
     let currentHover = -1
     this.canvasStory.forEach((e, index) => {
       const targetminX = e.x;
@@ -164,7 +166,7 @@ function addRect() {
 function deleteFirst() {
   canvasStory.shift();
   initCanvas();
-  const active = new DrawActive(activeBox,0,0,0,0,'0')
+  const active = new DrawActive(activeBox, 0, 0, 0, 0, '0')
   active.render();
   if (canvasStory.length === 0) {
     currentHover = -1;
@@ -177,8 +179,13 @@ function deleteFirst() {
     if (e.hover) {
       // 更新当前被选中的索引
       currentHover = i;
-      const {width,height,y,x} = e
-      const active = new DrawActive(activeBox,width,height,x,y,'0 0 7px #000')
+      const {
+        width,
+        height,
+        y,
+        x
+      } = e
+      const active = new DrawActive(activeBox, width, height, x, y)
       active.render();
     }
     renderCanvas(e);
@@ -199,33 +206,71 @@ function renderCanvas(data) {
 }
 // 鼠标悬浮
 function mouseMove(event) {
-  if(touchStart){
-    console.log(event)
+  if (touchStart) {
+    initCanvas();
+    canvasStory.forEach((e) => {
+      if (e.hover) {
+        let offsetX = event.pageX - touchOffsetX
+        let offsetY = event.pageY - touchOffsetY
+
+        const canvasRangeMinX = canvas.offsetLeft
+        const canvasRangeMaxX = canvas.offsetLeft + canvas.width-e.width
+        const canvasRangeMinY = canvas.offsetTop
+        const canvasRangeMaxY = canvas.offsetTop + canvas.height-e.height
+        const atCanvasRangeX = event.pageX >= canvasRangeMinX && event.pageX <= canvasRangeMaxX
+        const atCanvasRangeY = event.pageY >= canvasRangeMinY && event.pageY <= canvasRangeMaxY
+        if(offsetX<canvasRangeMinX){
+          offsetX = canvasRangeMinX
+        }else if(offsetX>canvasRangeMaxX){
+          offsetX=canvasRangeMaxX
+        }
+        if(offsetY<canvasRangeMinY){
+          offsetY = canvasRangeMinY
+        }else if(offsetY>canvasRangeMaxY){
+          offsetY=canvasRangeMaxY
+        }
+        e.x= offsetX
+        e.y= offsetY
+        const {
+          width,
+          height,
+          y,
+          x
+        } = e
+        const active = new DrawActive(activeBox, width, height, x, y)
+        active.render();
+      }
+
+      renderCanvas(e);
+    });
   }
 }
-function mouseOut(){
+
+function mouseOut() {
   touchStart = false
 }
-function range(event){
+
+function range(event) {
   const canvasRangeMinX = canvas.offsetLeft
-  const canvasRangeMaxX = canvas.offsetLeft+canvas.width
+  const canvasRangeMaxX = canvas.offsetLeft + canvas.width
   const canvasRangeMinY = canvas.offsetTop
-  const canvasRangeMaxY = canvas.offsetTop+canvas.height
-  const atCanvasRangeX = event.pageX>=canvasRangeMinX&&event.pageX<=canvasRangeMaxX
-  const atCanvasRangeY = event.pageY>=canvasRangeMinY&&event.pageY<=canvasRangeMaxY
-  return atCanvasRangeX&&atCanvasRangeY
+  const canvasRangeMaxY = canvas.offsetTop + canvas.height
+  const atCanvasRangeX = event.pageX >= canvasRangeMinX && event.pageX <= canvasRangeMaxX
+  const atCanvasRangeY = event.pageY >= canvasRangeMinY && event.pageY <= canvasRangeMaxY
+  return atCanvasRangeX && atCanvasRangeY
 }
 // 监听鼠标点击
-function onmousedown(event){
+function onmousedown(event) {
   const arRange = range(event)
-  if(arRange){
-    console.log(event)
+  if (arRange) {
     touchStart = true
+    touchOffsetX = event.offsetX
+    touchOffsetY = event.offsetY
   }
 }
 // 监听鼠标抬起
-function onmouseup(event){
-  if(touchStart){
+function onmouseup(event) {
+  if (touchStart) {
     touchStart = false
     console.log(event)
   }
@@ -237,32 +282,38 @@ function mouseEnter(event) {
 
   // 记录下hover 的对象并初始化所有内容
   initCanvas();
-  const recordActive = new RecordActive(canvasStory,mouseX,mouseY)
+  const recordActive = new RecordActive(canvasStory, mouseX, mouseY)
   currentHover = recordActive.record()
-  console.log(currentHover)
-
   if (currentHover > -1 && canvasStory.length > 0) {
     canvasStory[currentHover].hover = true;
   }
   // if (currentSelect > -1) {
   //   canvasStory[currentSelect].hover = true;
   // }
-  if (currentHover>-1&&canvasStory.length) {
+  if (currentHover > -1 && canvasStory.length) {
     // 点击后将被点击的移动至最上层
     const current = canvasStory.splice(currentHover, 1);
     canvasStory.push(current[0]);
     currentSelect = canvasStory.length - 1;
     // const currentObj =  canvasStory[currentSelect]
     // const {width,height,y,x} = currentObj
-    // const active = new DrawActive(activeBox,width,height,x,y,'0 0 7px #000')
+    // const active = new DrawActive(activeBox,width,height,x,y)
     // active.render();
     initCanvas();
     // currentIndex.innerText = currentSelect;
+  } else {
+    const active = new DrawActive(activeBox, 0, 0, 0, 0)
+    active.render();
   }
   canvasStory.forEach((e) => {
-    if(e.hover){
-      const {width,height,y,x} = e
-      const active = new DrawActive(activeBox,width,height,x,y,'0 0 7px #000')
+    if (e.hover) {
+      const {
+        width,
+        height,
+        y,
+        x
+      } = e
+      const active = new DrawActive(activeBox, width, height, x, y)
       active.render();
     }
     renderCanvas(e);
@@ -290,10 +341,10 @@ addBtn.addEventListener("click", addRect, false);
 
 delBtn.addEventListener("click", deleteFirst, false);
 
-activeBox.addEventListener('mousedown',onmousedown,false)
-activeBox.addEventListener("mousemove", mouseMove, false);
-activeBox.addEventListener("mouseout", mouseOut, false);
-activeBox.addEventListener('mouseup',onmouseup,false)
+activeBox.addEventListener('mousedown', onmousedown, false)
+document.addEventListener("mousemove", mouseMove, false);
+// document.addEventListener("mouseout", mouseOut, false);
+activeBox.addEventListener('mouseup', onmouseup, false)
 
 canvas.addEventListener("click", mouseEnter, false);
 
