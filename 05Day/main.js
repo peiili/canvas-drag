@@ -262,13 +262,11 @@ function mouseMove(event) {
         item.x =  event.pageX-canvas.offsetLeft
         item.height = item.height+(item.y-event.pageY)>=10?item.height+(item.y-event.pageY):10;
         item.y =  event.pageY-canvas.offsetTop
-
         break;
       case 'top':
         item.height = item.height+(item.y-event.pageY)>=10?item.height+(item.y-event.pageY):10;
         item.y =  event.pageY-canvas.offsetTop
         break;
-
       case 'rightTop':
         item.width = event.pageX - item.x < 10 ? 10 : event.pageX - item.x
         item.height = item.height+(item.y-event.pageY)>=10?item.height+(item.y-event.pageY):10;
@@ -292,9 +290,6 @@ function mouseMove(event) {
       case 'rightBottom':
         item.width = event.pageX - item.x < 10 ? 10 : event.pageX - item.x
         item.height = event.pageY - item.y < 10 ? 10 : event.pageY - item.y
-        break;
-
-      default:
         break;
     }
     canvasStory.forEach((e) => {
@@ -350,7 +345,7 @@ function onmouseup() {
   currentAction = 'active'
 }
 // 鼠标点击
-function mouseEnter(event) {
+function mouseClick(event) {
   const mouseX = event.pageX;
   const mouseY = event.pageY;
 
@@ -422,6 +417,6 @@ document.addEventListener("mouseup", onmouseup, false);
 // document.addEventListener("mouseout", mouseOut, false);
 activeBox.addEventListener('mouseup', onmouseup, false)
 
-canvas.addEventListener("click", mouseEnter, false);
+canvas.addEventListener("click", mouseClick, false);
 
 renderTextBtn.addEventListener("click", renderText, false);
