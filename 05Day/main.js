@@ -1,7 +1,6 @@
 const activeBox = document.getElementById("placeholder");
 const customColor = document.getElementById("customColor");
 const addBtn = document.getElementById("addRect");
-const currentIndex = document.getElementById("current");
 const inputText = document.getElementById("inputText");
 const renderTextBtn = document.getElementById("renderText");
 const delBtn = document.getElementById("delRect");
@@ -29,20 +28,24 @@ const context = canvas.getContext("2d");
 canvas.width = canvasWidth;
 canvas.height = canvasHeight;
 
+const canvasLeft = canvas.getBoundingClientRect().left
+const canvasTop = canvas.getBoundingClientRect().top
+
 class DrawActive {
-  constructor(element, width, height, left, top, shadow) {
+  constructor(element, width, height, left, top, hide) {
     this.element = element
     this.width = width
     this.height = height
     this.left = left
     this.top = top
-    this.boxShadow = shadow || ''
+    this.hide = hide || 'block'
   }
   render() {
     this.element.style.width = this.width + 'px'
     this.element.style.height = this.height + 'px'
     this.element.style.left = this.left + 'px'
     this.element.style.top = this.top + 'px'
+    this.element.style.display = this.hide
     // this.element.style.boxShadow =this.boxShadow
   }
 }
@@ -119,7 +122,7 @@ class DrawRect extends DrawText {
     }
   }
 }
-class RecordActive {
+class RecordActiveIndex {
   constructor(canvasStory, mouseX, mouseY) {
     this.canvasStory = canvasStory
     this.mouseX = mouseX
@@ -143,6 +146,7 @@ class RecordActive {
     return currentHover;
   }
 }
+
 initCanvas();
 
 function initCanvas() {
@@ -174,7 +178,7 @@ function addRect() {
 function deleteFirst() {
   canvasStory.shift();
   initCanvas();
-  const active = new DrawActive(activeBox, 0, 0, 0, 0, '0')
+  const active = new DrawActive(activeBox, 0, 0, 0, 0, 'none')
   active.render();
   if (canvasStory.length === 0) {
     currentHover = -1;
@@ -218,25 +222,21 @@ function mouseMove(event) {
     initCanvas();
     canvasStory.forEach((e) => {
       if (e.hover) {
-        let offsetX = event.pageX - touchOffsetX
-        let offsetY = event.pageY - touchOffsetY
+        let offsetX = event.pageX - touchOffsetX - canvasLeft
+        let offsetY = event.pageY - touchOffsetY - canvasTop
         const canvasRangeMinX = canvas.offsetLeft
         const canvasRangeMaxX = canvas.offsetLeft + canvas.width - e.width
         const canvasRangeMinY = canvas.offsetTop
         const canvasRangeMaxY = canvas.offsetTop + canvas.height - e.height
         if (offsetX < canvasRangeMinX) {
           offsetX = canvasRangeMinX
-          touchStart = false
         } else if (offsetX > canvasRangeMaxX) {
           offsetX = canvasRangeMaxX
-          touchStart = false
         }
         if (offsetY < canvasRangeMinY) {
           offsetY = canvasRangeMinY
-          touchStart = false
         } else if (offsetY > canvasRangeMaxY) {
           offsetY = canvasRangeMaxY
-          touchStart = false
         }
         e.x = offsetX
         e.y = offsetY
@@ -258,38 +258,38 @@ function mouseMove(event) {
     let item = canvasStory[currentSelect]
     switch (currentAction) {
       case 'leftTop':
-        item.width = item.width+(item.x-event.pageX)>=10?item.width+(item.x-event.pageX):10;
-        item.x =  event.pageX-canvas.offsetLeft
-        item.height = item.height+(item.y-event.pageY)>=10?item.height+(item.y-event.pageY):10;
-        item.y =  event.pageY-canvas.offsetTop
+        item.width = item.width + (item.x + canvasLeft - event.pageX) >= 10 ? item.width + (item.x + canvasLeft - event.pageX) : 10;
+        item.x = event.pageX - canvasLeft
+        item.height = item.height + (item.y + canvasTop - event.pageY) >= 10 ? item.height + (item.y + canvasTop - event.pageY) : 10;
+        item.y = event.pageY - canvasTop
         break;
       case 'top':
-        item.height = item.height+(item.y-event.pageY)>=10?item.height+(item.y-event.pageY):10;
-        item.y =  event.pageY-canvas.offsetTop
+        item.height = item.height + (item.y + canvasTop - event.pageY) >= 10 ? item.height + (item.y + canvasTop - event.pageY) : 10;
+        item.y = event.pageY - canvasTop
         break;
       case 'rightTop':
-        item.width = event.pageX - item.x < 10 ? 10 : event.pageX - item.x
-        item.height = item.height+(item.y-event.pageY)>=10?item.height+(item.y-event.pageY):10;
-        item.y =  event.pageY-canvas.offsetTop
+        item.width = event.pageX - item.x - canvasLeft < 10 ? 10 : event.pageX - item.x - canvasLeft
+        item.height = item.height + (item.y + canvasTop - event.pageY) >= 10 ? item.height + (item.y + canvasTop - event.pageY) : 10;
+        item.y = event.pageY - canvasTop
         break;
       case 'left':
-        item.width = item.width+(item.x-event.pageX)>=10?item.width+(item.x-event.pageX):10;
-        item.x =  event.pageX-canvas.offsetLeft
+        item.width = item.width + (item.x + canvasLeft - event.pageX) >= 10 ? item.width + (item.x + canvasLeft - event.pageX) : 10;
+        item.x = event.pageX - canvasLeft
         break;
       case 'right':
-        item.width = event.pageX - item.x < 10 ? 10 : event.pageX - item.x
+        item.width = event.pageX - item.x - canvasLeft < 10 ? 10 : event.pageX - item.x - canvasLeft
         break;
       case 'leftBottom':
-        item.width = item.width+(item.x-event.pageX)>=10?item.width+(item.x-event.pageX):10;
-        item.x =  event.pageX-canvas.offsetLeft
-        item.height = event.pageY - item.y < 10 ? 10 : event.pageY - item.y
+        item.width = item.width + (item.x + canvasLeft - event.pageX) >= 10 ? item.width + (item.x + canvasLeft - event.pageX) : 10;
+        item.x = event.pageX - canvasLeft
+        item.height = event.pageY - item.y - canvasTop < 10 ? 10 : event.pageY - item.y - canvasLeft
         break;
       case 'bottom':
-        item.height = event.pageY - item.y < 10 ? 10 : event.pageY - item.y
+        item.height = event.pageY - item.y - canvasTop < 10 ? 10 : event.pageY - item.y - canvasLeft
         break;
       case 'rightBottom':
-        item.width = event.pageX - item.x < 10 ? 10 : event.pageX - item.x
-        item.height = event.pageY - item.y < 10 ? 10 : event.pageY - item.y
+        item.width = event.pageX - item.x - canvasLeft < 10 ? 10 : event.pageX - item.x - canvasLeft
+        item.height = event.pageY - item.y - canvasTop < 10 ? 10 : event.pageY - item.y - canvasTop
         break;
     }
     canvasStory.forEach((e) => {
@@ -313,10 +313,10 @@ function mouseOut() {
 }
 
 function range(event) {
-  const canvasRangeMinX = canvas.offsetLeft
-  const canvasRangeMaxX = canvas.offsetLeft + canvas.width
-  const canvasRangeMinY = canvas.offsetTop
-  const canvasRangeMaxY = canvas.offsetTop + canvas.height
+  const canvasRangeMinX = canvasLeft
+  const canvasRangeMaxX = canvasLeft + canvas.width
+  const canvasRangeMinY = canvasTop
+  const canvasRangeMaxY = canvasTop + canvas.height
   const atCanvasRangeX = event.pageX >= canvasRangeMinX && event.pageX <= canvasRangeMaxX
   const atCanvasRangeY = event.pageY >= canvasRangeMinY && event.pageY <= canvasRangeMaxY
   return atCanvasRangeX && atCanvasRangeY
@@ -346,13 +346,13 @@ function onmouseup() {
 }
 // 鼠标点击
 function mouseClick(event) {
-  const mouseX = event.pageX;
-  const mouseY = event.pageY;
+  const mouseX = event.offsetX;
+  const mouseY = event.offsetY;
 
   // 记录下hover 的对象并初始化所有内容
   initCanvas();
-  const recordActive = new RecordActive(canvasStory, mouseX, mouseY)
-  currentHover = recordActive.record()
+  const activeIndex = new RecordActiveIndex(canvasStory, mouseX, mouseY)
+  currentHover = activeIndex.record()
   if (currentHover > -1 && canvasStory.length > 0) {
     canvasStory[currentHover].hover = true;
   }
@@ -364,14 +364,9 @@ function mouseClick(event) {
     const current = canvasStory.splice(currentHover, 1);
     canvasStory.push(current[0]);
     currentSelect = canvasStory.length - 1;
-    // const currentObj =  canvasStory[currentSelect]
-    // const {width,height,y,x} = currentObj
-    // const active = new DrawActive(activeBox,width,height,x,y)
-    // active.render();
     initCanvas();
-    // currentIndex.innerText = currentSelect;
   } else {
-    const active = new DrawActive(activeBox, 0, 0, 0, 0)
+    const active = new DrawActive(activeBox, 0, 0, 0, 0, 'none')
     active.render();
   }
   canvasStory.forEach((e) => {
@@ -414,7 +409,6 @@ activeBox.addEventListener('mousedown', onmousedown, false)
 
 document.addEventListener("mousemove", mouseMove, false);
 document.addEventListener("mouseup", onmouseup, false);
-// document.addEventListener("mouseout", mouseOut, false);
 activeBox.addEventListener('mouseup', onmouseup, false)
 
 canvas.addEventListener("click", mouseClick, false);
