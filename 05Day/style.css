@@ -18,31 +18,22 @@ html {
   border: 1px solid #000;
   position: absolute;
 }
-.top {
-  cursor: n-resize;
+
+.top,.bottom {
+  cursor: ns-resize;
 }
-.bottom {
-  cursor: s-resize;
-}
-.left {
-  cursor: w-resize;
-}
-.right {
-  cursor: e-resize;
-}
-.left-top {
-  cursor: nw-resize;
+.left,.right {
+  cursor: ew-resize;
 }
 
-.left-bottom {
-  cursor: sw-resize;
+.left-top ,.right-bottom {
+  cursor: nwse-resize;
 }
-.right-bottom {
-  cursor: se-resize;
+
+.left-bottom,.right-top {
+  cursor: nesw-resize;
 }
-.right-top {
-  cursor: ne-resize;
-}
+
 .left-top {
   left: -6px;
   top: -6px;

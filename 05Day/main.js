@@ -5,6 +5,7 @@ const currentIndex = document.getElementById("current");
 const inputText = document.getElementById("inputText");
 const renderTextBtn = document.getElementById("renderText");
 const delBtn = document.getElementById("delRect");
+const tags = document.querySelectorAll("tag");
 const canvas = document.getElementById("canvas");
 
 const canvasWidth = 500;
@@ -13,8 +14,15 @@ const canvasHeight = 500;
 let currentHover = -1;
 let currentSelect = -1;
 let touchStart = false;
+
+// 点击元素时记录相对元素的位置
 let touchOffsetX = 0;
 let touchOffsetY = 0;
+
+// 点击元素时记录相对页面的位置
+let touchStartX = 0;
+let touchStartY = 0;
+let currentAction = 'active'
 const canvasStory = [];
 const context = canvas.getContext("2d");
 
@@ -212,25 +220,26 @@ function mouseMove(event) {
       if (e.hover) {
         let offsetX = event.pageX - touchOffsetX
         let offsetY = event.pageY - touchOffsetY
-
         const canvasRangeMinX = canvas.offsetLeft
-        const canvasRangeMaxX = canvas.offsetLeft + canvas.width-e.width
+        const canvasRangeMaxX = canvas.offsetLeft + canvas.width - e.width
         const canvasRangeMinY = canvas.offsetTop
-        const canvasRangeMaxY = canvas.offsetTop + canvas.height-e.height
-        const atCanvasRangeX = event.pageX >= canvasRangeMinX && event.pageX <= canvasRangeMaxX
-        const atCanvasRangeY = event.pageY >= canvasRangeMinY && event.pageY <= canvasRangeMaxY
-        if(offsetX<canvasRangeMinX){
+        const canvasRangeMaxY = canvas.offsetTop + canvas.height - e.height
+        if (offsetX < canvasRangeMinX) {
           offsetX = canvasRangeMinX
-        }else if(offsetX>canvasRangeMaxX){
-          offsetX=canvasRangeMaxX
+          touchStart = false
+        } else if (offsetX > canvasRangeMaxX) {
+          offsetX = canvasRangeMaxX
+          touchStart = false
         }
-        if(offsetY<canvasRangeMinY){
+        if (offsetY < canvasRangeMinY) {
           offsetY = canvasRangeMinY
-        }else if(offsetY>canvasRangeMaxY){
-          offsetY=canvasRangeMaxY
+          touchStart = false
+        } else if (offsetY > canvasRangeMaxY) {
+          offsetY = canvasRangeMaxY
+          touchStart = false
         }
-        e.x= offsetX
-        e.y= offsetY
+        e.x = offsetX
+        e.y = offsetY
         const {
           width,
           height,
@@ -241,6 +250,64 @@ function mouseMove(event) {
         active.render();
       }
 
+      renderCanvas(e);
+    });
+  }
+  if (currentAction !== 'active') {
+    initCanvas();
+    let item = canvasStory[currentSelect]
+    switch (currentAction) {
+      case 'leftTop':
+        item.width = item.width+(item.x-event.pageX)>=10?item.width+(item.x-event.pageX):10;
+        item.x =  event.pageX-canvas.offsetLeft
+        item.height = item.height+(item.y-event.pageY)>=10?item.height+(item.y-event.pageY):10;
+        item.y =  event.pageY-canvas.offsetTop
+
+        break;
+      case 'top':
+        item.height = item.height+(item.y-event.pageY)>=10?item.height+(item.y-event.pageY):10;
+        item.y =  event.pageY-canvas.offsetTop
+        break;
+
+      case 'rightTop':
+        item.width = event.pageX - item.x < 10 ? 10 : event.pageX - item.x
+        item.height = item.height+(item.y-event.pageY)>=10?item.height+(item.y-event.pageY):10;
+        item.y =  event.pageY-canvas.offsetTop
+        break;
+      case 'left':
+        item.width = item.width+(item.x-event.pageX)>=10?item.width+(item.x-event.pageX):10;
+        item.x =  event.pageX-canvas.offsetLeft
+        break;
+      case 'right':
+        item.width = event.pageX - item.x < 10 ? 10 : event.pageX - item.x
+        break;
+      case 'leftBottom':
+        item.width = item.width+(item.x-event.pageX)>=10?item.width+(item.x-event.pageX):10;
+        item.x =  event.pageX-canvas.offsetLeft
+        item.height = event.pageY - item.y < 10 ? 10 : event.pageY - item.y
+        break;
+      case 'bottom':
+        item.height = event.pageY - item.y < 10 ? 10 : event.pageY - item.y
+        break;
+      case 'rightBottom':
+        item.width = event.pageX - item.x < 10 ? 10 : event.pageX - item.x
+        item.height = event.pageY - item.y < 10 ? 10 : event.pageY - item.y
+        break;
+
+      default:
+        break;
+    }
+    canvasStory.forEach((e) => {
+      if (e.hover) {
+        const {
+          width,
+          height,
+          y,
+          x
+        } = e
+        const active = new DrawActive(activeBox, width, height, x, y)
+        active.render();
+      }
       renderCanvas(e);
     });
   }
@@ -261,19 +328,26 @@ function range(event) {
 }
 // 监听鼠标点击
 function onmousedown(event) {
-  const arRange = range(event)
-  if (arRange) {
+  const tag = event.target.dataset.tag
+  const arRange = range(event);
+  touchStartX = event.pageX
+  touchStartY = event.pageY
+  // 记录当前的行为
+  currentAction = tag
+  if (arRange && event.target.dataset.tag === 'active') {
     touchStart = true
+
+    // 记录鼠标点击时距离点击元素的边距
     touchOffsetX = event.offsetX
     touchOffsetY = event.offsetY
   }
 }
 // 监听鼠标抬起
-function onmouseup(event) {
+function onmouseup() {
   if (touchStart) {
     touchStart = false
-    console.log(event)
   }
+  currentAction = 'active'
 }
 // 鼠标点击
 function mouseEnter(event) {
@@ -342,7 +416,9 @@ addBtn.addEventListener("click", addRect, false);
 delBtn.addEventListener("click", deleteFirst, false);
 
 activeBox.addEventListener('mousedown', onmousedown, false)
+
 document.addEventListener("mousemove", mouseMove, false);
+document.addEventListener("mouseup", onmouseup, false);
 // document.addEventListener("mouseout", mouseOut, false);
 activeBox.addEventListener('mouseup', onmouseup, false)
 

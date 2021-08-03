@@ -9,15 +9,15 @@
 </head>
 <body>
 <div id="box" class="box">
-  <div id="placeholder">
-    <div class="tag left-top"></div>
-    <div class="tag top"></div>
-    <div class="tag right-top"></div>
-    <div class="tag left"></div>
-    <div class="tag right"></div>
-    <div class="tag left-bottom"></div>
-    <div class="tag bottom"></div>
-    <div class="tag right-bottom"></div>
+  <div id="placeholder" data-tag="active">
+    <div data-tag="leftTop" class="tag left-top"></div>
+    <div data-tag="top" class="tag top"></div>
+    <div data-tag="rightTop" class="tag right-top"></div>
+    <div data-tag="left" class="tag left"></div>
+    <div data-tag="right" class="tag right"></div>
+    <div data-tag="leftBottom" class="tag left-bottom"></div>
+    <div data-tag="bottom" class="tag bottom"></div>
+    <div data-tag="rightBottom" class="tag right-bottom"></div>
   </div>
   <canvas id="canvas"></canvas>
 </div>
@@ -25,6 +25,7 @@
 <button id="delRect">删除元素最早的</button>
 <input id="inputText" type="text">
 <button id="renderText">渲染文字</button>
+
 <input id="customColor" value="#ff0000" type="color">
 <p id="current">
 
