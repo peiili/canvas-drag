@@ -1,0 +1,73 @@
+body,
+html {
+  margin: 0;
+  padding: 0;
+}
+.box {
+  position: relative;
+}
+#placeholder {
+  position: absolute;
+  box-sizing: border-box;
+  border: 1px solid #000;
+  display: none;
+  /* overflow: hidden; */
+}
+#placeholder .tag {
+  height: 11px;
+  width: 11px;
+  border: 1px solid #000;
+  position: absolute;
+}
+
+.top,.bottom {
+  cursor: ns-resize;
+}
+.left,.right {
+  cursor: ew-resize;
+}
+
+.left-top ,.right-bottom {
+  cursor: nwse-resize;
+}
+
+.left-bottom,.right-top {
+  cursor: nesw-resize;
+}
+
+.left-top {
+  left: -6px;
+  top: -6px;
+}
+.left {
+  left: -6px;
+  top: 50%;
+  margin-top: -6px;
+}
+.left-bottom {
+  left: -6px;
+  top: 100%;
+  margin-top: -6px;
+}
+.top,
+.bottom {
+  left: 50%;
+  margin-top: -6px;
+  margin-left: -6px;
+}
+.bottom {
+  top: 100%;
+}
+.right-top,
+.right-bottom,
+.right {
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -6px;
+}
+.right-bottom {
+  top: 100%;
+}
+.right {
+  top: 50%;
+}

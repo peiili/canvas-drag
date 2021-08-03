@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+<body>
+  <div style="height:20px">
+
+  </div>
+  <div style="margin-left: 100px;">
+    <div id="box" class="box">
+      <div id="placeholder" data-tag="active">
+        <div data-tag="leftTop" class="tag left-top"></div>
+        <div data-tag="top" class="tag top"></div>
+        <div data-tag="rightTop" class="tag right-top"></div>
+        <div data-tag="left" class="tag left"></div>
+        <div data-tag="right" class="tag right"></div>
+        <div data-tag="leftBottom" class="tag left-bottom"></div>
+        <div data-tag="bottom" class="tag bottom"></div>
+        <div data-tag="rightBottom" class="tag right-bottom"></div>
+      </div>
+      <canvas id="canvas"></canvas>
+    </div>
+    <div style="margin-top:20px;">
+      <div>画布宽度：
+        <input type="text">
+      </div>
+      <div>画布高度：
+        <input type="text">
+      </div>
+      <div>背景图：
+        <input id="upload" type="file">
+      </div>
+      <div style="margin-top:10px">
+        <button id="addRect">添加元素</button>
+        <button id="delRect">删除元素最早的</button>
+        <input id="inputText" type="text">
+        <button id="renderText">渲染文字</button>
+        <input id="customColor" value="#ff0000" type="color">
+      </div>
+      <p id="current">
+
+      </p>
+    </div>
+  </div>
+    <script src="./main.js"></script>
+</body>
+</html>
