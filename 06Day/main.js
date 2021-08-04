@@ -285,10 +285,10 @@ function mouseMove(event) {
       case 'leftBottom':
         item.width = item.width + (item.x + canvasLeft - event.pageX) >= 10 ? item.width + (item.x + canvasLeft - event.pageX) : 10;
         item.x = event.pageX - canvasLeft
-        item.height = event.pageY - item.y - canvasTop < 10 ? 10 : event.pageY - item.y - canvasLeft
+        item.height = event.pageY - item.y - canvasTop < 10 ? 10 : event.pageY - item.y - canvasTop
         break;
       case 'bottom':
-        item.height = event.pageY - item.y - canvasTop < 10 ? 10 : event.pageY - item.y - canvasLeft
+        item.height = event.pageY - item.y - canvasTop < 10 ? 10 : event.pageY - item.y - canvasTop
         break;
       case 'rightBottom':
         item.width = event.pageX - item.x - canvasLeft < 10 ? 10 : event.pageX - item.x - canvasLeft
