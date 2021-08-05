@@ -148,14 +148,14 @@ class RecordActiveIndex {
   }
 }
 
-// initCanvas();
+initCanvas();
 
 function initCanvas() {
   currentHover = -1;
-  // context.clearRect(0, 0, canvasWidth, canvasHeight);
-  // context.fillStyle = "yellow";
-  // context.fillRect(0, 0, canvasWidth, canvasHeight);
-  context.drawImage(imgSrc, 0, 0, canvasWidth, canvasHeight);
+  context.clearRect(0, 0, canvasWidth, canvasHeight);
+  context.fillStyle = "yellow";
+  context.fillRect(0, 0, canvasWidth, canvasHeight);
+  // context.drawImage(imgSrc, 0, 0, canvasWidth, canvasHeight);
 
 }
 
@@ -257,6 +257,9 @@ function mouseMove(event) {
     });
   }
   if (currentAction !== 'active') {
+    if(!range(event)){
+      return
+    } 
     initCanvas();
     let item = canvasStory[currentSelect]
     switch (currentAction) {
@@ -288,7 +291,8 @@ function mouseMove(event) {
         item.height = event.pageY - item.y - canvasTop < 10 ? 10 : event.pageY - item.y - canvasTop
         break;
       case 'bottom':
-        item.height = event.pageY - item.y - canvasTop < 10 ? 10 : event.pageY - item.y - canvasTop
+        // item.height= item.y+item.height>=canvasHeight?canvasHeight-item.y: event.pageY - item.y - canvasTop < 10 ? 10 : event.pageY - item.y - canvasTop
+        item.height=  event.pageY - item.y - canvasTop < 10 ? 10 : event.pageY - item.y - canvasTop
         break;
       case 'rightBottom':
         item.width = event.pageX - item.x - canvasLeft < 10 ? 10 : event.pageX - item.x - canvasLeft
@@ -414,7 +418,7 @@ function upload(e){
       img.src = base64File
       img.onload = ()=>{
          imgSrc = img
-        initCanvas(img)
+        // initCanvas(img)
       }
     }
   }
